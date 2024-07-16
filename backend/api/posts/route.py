@@ -22,6 +22,9 @@ put = router.put
 @post('/posts', response_model=CreatePostResponse, status_code=status.HTTP_201_CREATED)
 async def create_post(posts: CreatePost, response: Response, jwt_token: str = Depends(get_token()),
                       db: Session = Depends(get_db)):
+    """
+    This endpoint allows an authenticated user to add a post.
+    """
     post_response = CreatePostResponse()
     user = verify_access_token(db, jwt_token)
 
@@ -40,6 +43,9 @@ async def create_post(posts: CreatePost, response: Response, jwt_token: str = De
 
 @get('/posts', status_code=status.HTTP_200_OK, response_model=GetPostResponse)
 async def get_posts(response: Response, jwt_token: str = Depends(get_token()), db: Session = Depends(get_db)):
+    """
+    This endpoint allows an authenticated user to get all the available post.
+    """
     posts_response = GetPostResponse()
     user = verify_access_token(db, jwt_token)
     if user is None:
@@ -55,6 +61,9 @@ async def get_posts(response: Response, jwt_token: str = Depends(get_token()), d
 @patch('/post/{post_id}', response_model=CreatePostResponse, status_code=status.HTTP_200_OK)
 async def update_post(post_id: int, posts: UpdatePost, response: Response, jwt_token: str = Depends(get_token()),
                       db: Session = Depends(get_db)):
+    """
+    This endpoint allows an authenticated user to update a single post.
+    """
     post_response = CreatePostResponse()
     user = verify_access_token(db, jwt_token)
     post_instance = db.query(Post).filter(Post.id == post_id).first()
