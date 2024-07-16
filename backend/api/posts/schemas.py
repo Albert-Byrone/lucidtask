@@ -15,6 +15,8 @@ class GetPost(PostBase):
     class Config:
         orm_mode = True
 
+class UpdatePost(CamelModel):
+    text: str
 
 
 class PostRead(CamelModel):
