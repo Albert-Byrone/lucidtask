@@ -6,12 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 # Conditional import due to pytest which imports tests as external packages.
 if __name__ in ["__main__", "main"]:
     from backend.api.authentication.route import router as auth_router
-    # from backend.api.projects.route import router as project_routes
+    from backend.api.posts.route import router as post_router
     from backend.configs.database_config import Base, engine
 
 else:
     from .backend.configs.database_config import Base, engine
     from backend.api.authentication.route import router as auth_router
+    from backend.api.posts.route import router as post_router
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -26,9 +28,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# app.include_router(project_routes, prefix="/v1")
 
 app.include_router(auth_router)
+app.include_router(post_router)
+
 get = app.get
 
 @get("/")
