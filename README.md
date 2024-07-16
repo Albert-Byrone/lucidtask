@@ -5,6 +5,8 @@
 - Implement field validation and dependency injection as needed.
 - Use Python and FastAPI for building the application.
 
+Deployed Link : https://lucidtask.onrender.com/redoc
+
 # Features
 
 - **User Management**: Add new users to the system.
@@ -45,11 +47,6 @@ pip install -r requirements.txt
 ```
 python3 main.py
 ```
-
-# Screenshot
-
-1. Sign Up:
-   ![Alt text](https://assets.digitalocean.com/articles/alligator/boo.svg "a title")
 
 # Contributions
 
