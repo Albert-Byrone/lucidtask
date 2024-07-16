@@ -77,65 +77,65 @@ async def login(login_data: UserLogin, response: Response, db: Session = Depends
 
 
 # Endpoint to change user's authenticated user's old password by creating a new one.
-@patch('/v1/users/{user_id}/password', status_code=status.HTTP_200_OK, response_model=ResponseModel)
-async def change_password(user_id: int, response: Response, password: PasswordChange, db: Session = Depends(get_db),
-                          token: str = Depends(get_token())):
-    password_response = ResponseModel()
-    user = verify_access_token(db, token)
-    if not user:
-        password_response.message = INVALID_CREDENTIALS_MESSAGE
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return password_response
-    if user_id != user.id:
-        password_response.message = INVALID_USER_PARAMETER
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return password_response
+# @patch('/v1/users/{user_id}/password', status_code=status.HTTP_200_OK, response_model=ResponseModel)
+# async def change_password(user_id: int, response: Response, password: PasswordChange, db: Session = Depends(get_db),
+#                           token: str = Depends(get_token())):
+#     password_response = ResponseModel()
+#     user = verify_access_token(db, token)
+#     if not user:
+#         password_response.message = INVALID_CREDENTIALS_MESSAGE
+#         response.status_code = status.HTTP_401_UNAUTHORIZED
+#         return password_response
+#     if user_id != user.id:
+#         password_response.message = INVALID_USER_PARAMETER
+#         response.status_code = status.HTTP_400_BAD_REQUEST
+#         return password_response
 
-    if not verify_password(password.old_password, user.hashed_password):
-        password_response.message = INVALID_OLD_AUTH_MESSAGE
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return password_response
+#     if not verify_password(password.old_password, user.hashed_password):
+#         password_response.message = INVALID_OLD_AUTH_MESSAGE
+#         response.status_code = status.HTTP_401_UNAUTHORIZED
+#         return password_response
 
-    if change_password_crud(db, user, password.new_password):
-        password_response.success = True
-        password_response.message = AUTH_CHANGE_SUCCESSFUL_MESSAGE
-        return password_response
-
-
-@patch('/v1/users/password_reset_token', status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
-async def get_reset_token(emailFields: EmailVerification, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == emailFields.email).first()
-    reset_token_response = ResponseModel()
-    if user is None:
-        reset_token_response.message = RESET_SENT_SUCCESS_MESSAGE
-        reset_token_response.success = True
-        return reset_token_response
-    created_token = create_reset_token_crud(db, user)
-
-    if created_token:
-        reset_token_response.success = True
-
-        reset_token_response.message = str(created_token.token)
-
-        return reset_token_response
+#     if change_password_crud(db, user, password.new_password):
+#         password_response.success = True
+#         password_response.message = AUTH_CHANGE_SUCCESSFUL_MESSAGE
+#         return password_response
 
 
-@patch('/v1/users/password_reset', status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
-async def reset_password(password_reset: PasswordReset, db: Session = Depends(get_db)):
-    password_reset_response = ResponseModel()
-    user = db.query(User).filter(User.email == password_reset.email).first()
-    reset_token = None
-    reset_status = False
-    if user:
-        reset_token = db.query(PasswordResetToken).filter(PasswordResetToken.user_id == user.id).first()
+# @patch('/v1/users/password_reset_token', status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
+# async def get_reset_token(emailFields: EmailVerification, db: Session = Depends(get_db)):
+#     user = db.query(User).filter(User.email == emailFields.email).first()
+#     reset_token_response = ResponseModel()
+#     if user is None:
+#         reset_token_response.message = RESET_SENT_SUCCESS_MESSAGE
+#         reset_token_response.success = True
+#         return reset_token_response
+#     created_token = create_reset_token_crud(db, user)
 
-    if reset_token:
-        reset_status = reset_password_crud(db, user, password_reset.password)
+#     if created_token:
+#         reset_token_response.success = True
 
-    if reset_status:
-        password_reset_response.success = True
-        password_reset_response.message = AUTH_RESET_SUCCESS_MESSAGE
-        return password_reset_response
-    else:
-        password_reset_response.message = GENERAL_ERROR_MESSAGE
-        return password_reset_response
+#         reset_token_response.message = str(created_token.token)
+
+#         return reset_token_response
+
+
+# @patch('/v1/users/password_reset', status_code=status.HTTP_201_CREATED, response_model=ResponseModel)
+# async def reset_password(password_reset: PasswordReset, db: Session = Depends(get_db)):
+#     password_reset_response = ResponseModel()
+#     user = db.query(User).filter(User.email == password_reset.email).first()
+#     reset_token = None
+#     reset_status = False
+#     if user:
+#         reset_token = db.query(PasswordResetToken).filter(PasswordResetToken.user_id == user.id).first()
+
+#     if reset_token:
+#         reset_status = reset_password_crud(db, user, password_reset.password)
+
+#     if reset_status:
+#         password_reset_response.success = True
+#         password_reset_response.message = AUTH_RESET_SUCCESS_MESSAGE
+#         return password_reset_response
+#     else:
+#         password_reset_response.message = GENERAL_ERROR_MESSAGE
+#         return password_reset_response
